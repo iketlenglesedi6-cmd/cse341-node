@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:3000
+
+### Health check
+GET {{baseUrl}}/
+
+### Get all contacts
+GET {{baseUrl}}/contacts
+
+### Get one contact by MongoDB id query parameter
+# Replace the value with an _id from the get-all response.
+GET {{baseUrl}}/contacts?id=000000000000000000000000
+
+### Get one contact by MongoDB id path parameter
+GET {{baseUrl}}/contacts/000000000000000000000000
