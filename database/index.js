@@ -14,7 +14,10 @@ async function initDb() {
     throw new Error('MONGODB_URI and MONGODB_DATABASE must be set')
   }
 
-  const client = new MongoClient(process.env.MONGODB_URI)
+  const client = new MongoClient(process.env.MONGODB_URI, {
+    tls: true,
+    serverSelectionTimeoutMS: 30000
+  })
   await client.connect()
   database = client.db(process.env.MONGODB_DATABASE)
   console.log('Connected to MongoDB')
