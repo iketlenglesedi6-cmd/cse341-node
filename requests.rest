@@ -1,14 +1,17 @@
 @baseUrl = http://localhost:3000
+@renderUrl = https://cse341-node-au0q.onrender.com
 
 ### Health check
 GET {{baseUrl}}/
 
-### Get all contacts
+### Get all contacts (local)
 GET {{baseUrl}}/contacts
 
-### Get one contact by MongoDB id query parameter
-# Replace the value with an _id from the get-all response.
-GET {{baseUrl}}/contacts?id=000000000000000000000000
-
-### Get one contact by MongoDB id path parameter
+### Get one contact by id (local)
 GET {{baseUrl}}/contacts/000000000000000000000000
+
+### Get all contacts (Render/production)
+GET {{renderUrl}}/contacts
+
+### Get one contact by id (Render/production)
+GET {{renderUrl}}/contacts/000000000000000000000000
