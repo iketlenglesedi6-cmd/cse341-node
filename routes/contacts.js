@@ -3,6 +3,105 @@ const { ObjectId } = require('mongodb')
 const database = require('../database')
 
 const router = express.Router()
+const contactFields = ['firstName', 'lastName', 'email', 'favoriteColor', 'birthday']
+
+/**
+ * @openapi
+ * /contacts:
+ *   get:
+ *     tags: [Contacts]
+ *     summary: Get all contacts
+ *     responses:
+ *       200:
+ *         description: A list of contacts
+ *   post:
+ *     tags: [Contacts]
+ *     summary: Create a new contact
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firstName, lastName, email, favoriteColor, birthday]
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string }
+ *               favoriteColor: { type: string }
+ *               birthday: { type: string }
+ *     responses:
+ *       201:
+ *         description: Contact created
+ * /
+
+/**
+ * @openapi
+ * /contacts/{id}:
+ *   get:
+ *     tags: [Contacts]
+ *     summary: Get a single contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Contact matching the supplied id
+ *   put:
+ *     tags: [Contacts]
+ *     summary: Update a contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firstName, lastName, email, favoriteColor, birthday]
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string }
+ *               favoriteColor: { type: string }
+ *               birthday: { type: string }
+ *     responses:
+ *       204:
+ *         description: Contact updated
+ *   delete:
+ *     tags: [Contacts]
+ *     summary: Delete a contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Contact deleted
+ */
+
+function validateContact(contact) {
+  if (!contact || typeof contact !== 'object') {
+    return 'A contact object is required'
+  }
+
+  for (const field of contactFields) {
+    if (typeof contact[field] !== 'string' || contact[field].trim() === '') {
+      return `${field} is required`
+    }
+  }
+
+  return null
+}
 
 async function getContact(request, response) {
   const id = request.params.id || request.query.id
@@ -40,5 +139,72 @@ router.get('/', async (request, response) => {
 })
 
 router.get('/:id', getContact)
+
+router.post('/', async (request, response) => {
+  const error = validateContact(request.body)
+
+  if (error) {
+    return response.status(400).json({ error })
+  }
+
+  try {
+    const result = await database.getDb().collection('contacts').insertOne(request.body)
+    response.status(201).json({ id: result.insertedId.toString() })
+  } catch (error) {
+    console.error(error)
+    response.status(500).json({ error: 'Unable to create contact' })
+  }
+})
+
+router.put('/:id', async (request, response) => {
+  const id = request.params.id
+
+  if (!id || !ObjectId.isValid(id)) {
+    return response.status(400).json({ error: 'A valid contact id is required' })
+  }
+
+  const error = validateContact(request.body)
+
+  if (error) {
+    return response.status(400).json({ error })
+  }
+
+  try {
+    const collection = database.getDb().collection('contacts')
+    const existingContact = await collection.findOne({ _id: new ObjectId(id) })
+
+    if (!existingContact) {
+      return response.status(404).json({ error: 'Contact not found' })
+    }
+
+    await collection.replaceOne({ _id: new ObjectId(id) }, request.body)
+    return response.sendStatus(204)
+  } catch (error) {
+    console.error(error)
+    response.status(500).json({ error: 'Unable to update contact' })
+  }
+})
+
+router.delete('/:id', async (request, response) => {
+  const id = request.params.id
+
+  if (!id || !ObjectId.isValid(id)) {
+    return response.status(400).json({ error: 'A valid contact id is required' })
+  }
+
+  try {
+    const collection = database.getDb().collection('contacts')
+    const result = await collection.deleteOne({ _id: new ObjectId(id) })
+
+    if (result.deletedCount === 0) {
+      return response.status(404).json({ error: 'Contact not found' })
+    }
+
+    return response.sendStatus(204)
+  } catch (error) {
+    console.error(error)
+    response.status(500).json({ error: 'Unable to delete contact' })
+  }
+})
 
 module.exports = router

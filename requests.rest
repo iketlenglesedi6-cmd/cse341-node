@@ -10,8 +10,62 @@ GET {{baseUrl}}/contacts
 ### Get one contact by id (local)
 GET {{baseUrl}}/contacts/000000000000000000000000
 
+### Create a contact (local)
+POST {{baseUrl}}/contacts
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "email": "john.smith@example.com",
+  "favoriteColor": "Blue",
+  "birthday": "1990-06-02"
+}
+
+### Update a contact (local)
+PUT {{baseUrl}}/contacts/000000000000000000000000
+Content-Type: application/json
+
+{
+  "firstName": "Updated",
+  "lastName": "Contact",
+  "email": "updated.contact@example.com",
+  "favoriteColor": "Blue",
+  "birthday": "1995-01-01"
+}
+
+### Delete a contact (local)
+DELETE {{baseUrl}}/contacts/000000000000000000000000
+
 ### Get all contacts (Render/production)
 GET {{renderUrl}}/contacts
 
 ### Get one contact by id (Render/production)
 GET {{renderUrl}}/contacts/000000000000000000000000
+
+### Create a contact (Render/production)
+POST {{renderUrl}}/contacts
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "favoriteColor": "Purple",
+  "birthday": "1995-02-02"
+}
+
+### Update a contact (Render/production)
+PUT {{renderUrl}}/contacts/000000000000000000000000
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "email": "jane.doe@example.com",
+  "favoriteColor": "Green",
+  "birthday": "1995-02-02"
+}
+
+### Delete a contact (Render/production)
+DELETE {{renderUrl}}/contacts/000000000000000000000000
