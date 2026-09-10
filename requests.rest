@@ -1,9 +1,6 @@
 @baseUrl = http://localhost:3000
 @renderUrl = https://cse341-node-au0q.onrender.com
 
-### Health check
-GET {{baseUrl}}/
-
 ### Get all contacts (local)
 GET {{baseUrl}}/contacts
 

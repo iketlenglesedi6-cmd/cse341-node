@@ -5,6 +5,111 @@ const database = require('../database')
 const router = express.Router()
 const contactFields = ['firstName', 'lastName', 'email', 'favoriteColor', 'birthday']
 
+/**
+ * @openapi
+ * /contacts:
+ *   get:
+ *     tags: [Contacts]
+ *     summary: Get all contacts
+ *     responses:
+ *       200:
+ *         description: A list of contacts
+ *   post:
+ *     tags: [Contacts]
+ *     summary: Create a new contact
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firstName, lastName, email, favoriteColor, birthday]
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string }
+ *               favoriteColor: { type: string }
+ *               birthday: { type: string }
+ *     responses:
+ *       201:
+ *         description: Contact created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [id]
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: The MongoDB ObjectId of the new contact
+ */
+
+/**
+ * @openapi
+ * /contacts/{id}:
+ *   get:
+ *     tags: [Contacts]
+ *     summary: Get a single contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Contact matching the supplied id
+ *       400:
+ *         description: The supplied id is invalid
+ *       404:
+ *         description: No contact matches the supplied id
+ *   put:
+ *     tags: [Contacts]
+ *     summary: Update a contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [firstName, lastName, email, favoriteColor, birthday]
+ *             properties:
+ *               firstName: { type: string }
+ *               lastName: { type: string }
+ *               email: { type: string }
+ *               favoriteColor: { type: string }
+ *               birthday: { type: string }
+ *     responses:
+ *       204:
+ *         description: Contact updated
+ *       400:
+ *         description: The supplied id or request body is invalid
+ *       404:
+ *         description: No contact matches the supplied id
+ *   delete:
+ *     tags: [Contacts]
+ *     summary: Delete a contact by id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Contact deleted
+ *       400:
+ *         description: The supplied id is invalid
+ *       404:
+ *         description: No contact matches the supplied id
+ */
+
 function validateContact(contact) {
   if (!contact || typeof contact !== 'object') {
     return 'A contact object is required'
@@ -20,7 +125,7 @@ function validateContact(contact) {
 }
 
 async function getContact(request, response) {
-  const id = request.params.id || request.query.id
+  const { id } = request.params
 
   if (!id || !ObjectId.isValid(id)) {
     return response.status(400).json({ error: 'A valid contact id is required' })
@@ -41,10 +146,6 @@ async function getContact(request, response) {
 }
 
 router.get('/', async (request, response) => {
-  if (request.query.id) {
-    return getContact(request, response)
-  }
-
   try {
     const contacts = await database.getDb().collection('contacts').find().toArray()
     response.status(200).json(contacts)

@@ -1,6 +1,6 @@
 # CSE 341 Contacts API
 
-Week 01 Contacts project for CSE 341. The API connects to MongoDB and provides the Part 1 GET endpoints.
+Week 02 Contacts project for CSE 341. The API connects to MongoDB and provides a CRUD interface for a `contacts` collection.
 
 ## Setup
 
@@ -14,10 +14,14 @@ The API runs at `http://localhost:3000` by default. Use `requests.rest` with the
 
 ## Routes
 
-- `GET /` returns a health check.
 - `GET /contacts` returns all contacts.
-- `GET /contacts?id=<id>` returns one contact by MongoDB ObjectId.
 - `GET /contacts/:id` returns one contact by MongoDB ObjectId.
+- `POST /contacts` creates a contact. All five contact fields are required; the response includes the new id.
+- `PUT /contacts/:id` replaces a contact. All five contact fields are required.
+- `DELETE /contacts/:id` deletes a contact.
+- `GET /api-docs` opens the interactive Swagger documentation.
+
+Each contact has `firstName`, `lastName`, `email`, `favoriteColor`, and `birthday` string fields. Successful reads return `200`; creation returns `201`; successful updates and deletes return `204`. Invalid ids or request bodies return `400`, and missing contacts return `404`.
 
 ## Render
 
