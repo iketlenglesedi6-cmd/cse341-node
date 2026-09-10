@@ -14,6 +14,7 @@ The API runs at `http://localhost:3000` by default. Use `requests.rest` with the
 
 ## Routes
 
+- `GET /` returns an API status message.
 - `GET /contacts` returns all contacts.
 - `GET /contacts/:id` returns one contact by MongoDB ObjectId.
 - `POST /contacts` creates a contact. All five contact fields are required; the response includes the new id.

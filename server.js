@@ -36,6 +36,9 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions)
 
 app.use(express.json())
+app.get('/', (request, response) => {
+  response.json({ message: 'Contacts API is running. Visit /api-docs for documentation.' })
+})
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.use('/contacts', contactsRouter)
 
